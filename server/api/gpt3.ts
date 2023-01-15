@@ -46,6 +46,7 @@ export default defineEventHandler((event) => {
           },
         },
         (res) => {
+          console.log("Got response from GPT-3");
           event.node.res.setHeader("Content-Type", "text/event-stream");
           resolve(res.pipe(transform));
         }
@@ -64,6 +65,7 @@ export default defineEventHandler((event) => {
       });
 
       req.on("error", (e) => {
+        console.error(e);
         reject("problem with request:" + e.message);
       });
 

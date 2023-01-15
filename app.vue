@@ -126,6 +126,6 @@ const submit = () => {
   message.value = "";
   messageInput.value?.focus();
 
-  sendRequest(newMessage);
+  sendRequest();
 };
 </script>
