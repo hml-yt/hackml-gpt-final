@@ -77,7 +77,7 @@
 
 <script setup lang="ts">
 const messages = ref([{
-  actor: 'ai',
+  actor: 'AI',
   message: 'Hello! How can I help you?'
 }]);
 
