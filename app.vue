@@ -83,12 +83,6 @@
 const messages = ref([{
   actor: 'AI',
   message: 'Hello! How can I help you?'
-}, {
-  actor: 'Human',
-  message: 'Write me some code'
-}, {
-  actor: 'AI',
-  message: 'Sure, here\'s some code:\n \`\`\`js\nfunction sayHello (msg, who) {\n  return \`\${who} says: msg\`;\n}\nsayHello("Hello World", "Johnny");\n\`\`\`\n'
 }]);
 
 const message = ref("");
