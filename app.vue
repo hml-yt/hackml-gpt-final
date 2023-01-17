@@ -29,21 +29,12 @@
                   <div class="flex flex-grow flex-col gap-3">
                     <div
                       class="min-h-[20px] flex flex-col items-start gap-4 whitespace-pre-wrap prose prose-gray text-gray-200 prose-p:m-0 prose-pre:p-0 prose-pre:m-0">
-                      <VueShowdown :markdown="message.message" :extensions="['highlight']" />
+                      <VueShowdown :markdown="addFullBlock(message.message, message.loading)"
+                        :extensions="['highlight']" />
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div v-if="loading" class="stretch mx-2 flex flex-row text-white py-4" ref="loadingIndicator">
-              <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
-                viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                </path>
-              </svg>
-              Thinking...
             </div>
           </div>
         </div>
@@ -82,24 +73,33 @@
 <script setup lang="ts">
 const messages = ref([{
   actor: 'AI',
-  message: 'Hello! How can I help you?'
+  message: 'Hello! How can I help you?',
+  loading: false
 }]);
 
 const message = ref("");
 const loading = ref(false);
 const messageInput = ref<HTMLInputElement | null>(null)
 
-const addMessage = (actor: "AI" | "Human", message: string) => {
-  messages.value.push({ actor, message });
+const addMessage = (actor: "AI" | "Human", message: string, loading: boolean = true) => {
+  const length = messages.value.push({ actor, message, loading });
+  scrollToEnd();
+  return messages.value[length - 1];
+};
+
+const addFullBlock = (markdown: string, loading: boolean) => {
+  return markdown + (loading ? '<span class="animate-pulse">\u258b</span>' : '')
+};
+
+const scrollToEnd = () => {
   setTimeout(() => {
     document.querySelector(".chat-messages>div:last-child")?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }, 100);
 };
 
 const sendRequest = async () => {
-  let msg = "";
-
   loading.value = true;
+  const newMessage = addMessage("AI", '');
 
   const res = await fetch(`/api/gpt3`, {
     body: JSON.stringify(messages.value.slice(1)),
@@ -113,8 +113,8 @@ const sendRequest = async () => {
     console.log('Result', result);
 
     if (result?.done) {
-      addMessage("AI", msg);
       loading.value = false;
+      newMessage.loading = false;
       return;
     }
 
@@ -123,7 +123,8 @@ const sendRequest = async () => {
       const dataSlice = line.slice('data: '.length).trim();
       if (dataSlice && dataSlice != '[DONE]') {
         const data = JSON.parse(dataSlice);
-        msg = msg.concat(data.text);
+        newMessage.message = newMessage.message.concat(data.text);
+        scrollToEnd();
       }
     });
   }
@@ -131,7 +132,7 @@ const sendRequest = async () => {
 
 const submit = async () => {
   const newMessage = message.value;
-  addMessage("Human", newMessage);
+  addMessage("Human", newMessage, false);
   await sendRequest();
   message.value = "";
   messageInput.value?.focus();
