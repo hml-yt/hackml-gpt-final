@@ -1,5 +1,9 @@
 # Hacking Modern Life's ChatGPT Clone
 
+## Hacking Modern Life
+
+Don't forget to subscribe to the channel at https://youtube.com/@hml for digital life hacks, home automation and coding tutorials.
+
 ## Setup
 
 Make sure to install the dependencies:
