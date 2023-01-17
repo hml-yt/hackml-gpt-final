@@ -1,6 +1,5 @@
 <template>
-  <main
-    class="absolute inset-0 h-screen transition-width flex flex-col overflow-hidden items-stretch flex-1 dark:bg-gray-800">
+  <main class="absolute inset-0 transition-width flex flex-col overflow-hidden items-stretch flex-1 dark:bg-gray-800">
     <div class="flex-1 overflow-hidden">
       <div class="h-full overflow-y-auto">
         <div class="flex flex-col items-center text-sm h-full chat-messages">
@@ -59,7 +58,7 @@
       </div>
     </div>
     <div
-      class="fixed inset-x-0 bottom-0 left-0 w-full border-t md:border-t-0 dark:border-white/20 md:border-transparent md:dark:border-transparent md:bg-vert-light-gradient bg-white dark:bg-gray-800 md:!bg-transparent dark:md:bg-vert-dark-gradient">
+      class="fixed inset-x-0 bottom-0 left-0 border-t md:border-t-0 dark:border-white/20 md:border-transparent md:dark:border-transparent md:bg-vert-light-gradient bg-white dark:bg-gray-800 md:!bg-transparent dark:md:bg-vert-dark-gradient">
       <form class="stretch mx-2 flex flex-row gap-3 pt-2 last:mb-2 md:last:mb-6 lg:mx-auto lg:max-w-3xl lg:pt-6">
         <div class="relative flex h-full flex-1 md:flex-col">
           <div class="ml-1 mt-1.5 md:w-full md:m-auto md:flex md:mb-2 gap-2 justify-center"></div>
