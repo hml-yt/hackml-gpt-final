@@ -92,7 +92,7 @@ const addMessage = (actor: "AI" | "Human", message: string) => {
   messages.value.push({ actor, message });
   setTimeout(() => {
     document.querySelector(".chat-messages>div:last-child")?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }, 0);
+  }, 100);
 };
 
 const sendRequest = async () => {
