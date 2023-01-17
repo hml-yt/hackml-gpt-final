@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="dark">
     <main
       class="absolute inset-0 transition-width flex flex-col overflow-hidden items-stretch flex-1 dark:bg-gray-800 pb-20 md:pb-32">
       <div class="flex-1 overflow-hidden">
@@ -28,7 +28,7 @@
                 <div class="relative flex w-[calc(100%-50px)] md:flex-col lg:w-[calc(100%-115px)]">
                   <div class="flex flex-grow flex-col gap-3">
                     <div
-                      class="min-h-[20px] flex flex-col items-start gap-4 whitespace-pre-wrap prose prose-gray text-gray-200 prose-p:m-0 prose-pre:p-0 prose-pre:m-0">
+                      class="min-h-[20px] flex flex-col items-start gap-4 whitespace-pre-wrap prose prose-gray dark:prose-invert prose-p:m-0 prose-pre:p-0 prose-pre:m-0 prose-li:my-0 prose-li:leading-none prose-ol:my-0">
                       <VueShowdown :markdown="addFullBlock(message.message, message.loading)"
                         :extensions="['highlight']" />
                     </div>
@@ -47,11 +47,11 @@
           <div class="ml-1 mt-1.5 md:w-full md:m-auto md:flex md:mb-2 gap-2 justify-center"></div>
           <div
             class="flex flex-col w-full py-2 flex-grow md:py-3 md:pl-4 relative border border-black/10 bg-white dark:border-gray-900/50 dark:text-white dark:bg-gray-700 rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:shadow-[0_0_15px_rgba(0,0,0,0.10)]">
-            <textarea tabindex="0" v-model="message" @keydown.enter.prevent="submit()" ref="messageInput" autofocus
-              :disabled="loading" data-id="63ee3844-11f0-456d-b3b5-a6e2a3ac6a04" rows="1"
+            <textarea tabindex="0" v-model="message" @keydown.enter.exact.prevent="submit()" ref="messageInput"
+              autofocus :disabled="loading" data-id="63ee3844-11f0-456d-b3b5-a6e2a3ac6a04" rows="1"
               :class="{ 'text-gray-800': loading }" placeholder="Write your message here..."
               class="m-0 w-full resize-none border-0 bg-transparent p-0 pl-2 pr-7 focus:ring-0 focus-visible:ring-0 dark:bg-transparent md:pl-0"
-              style="max-height: 200px; height: 24px; overflow-y: hidden;"></textarea>
+              style="max-height: 200px; overflow-y: scroll;" :style="{ height: (numOfLines * 24) + 'px' }"></textarea>
             <button @click.prevent="submit()" :disabled="loading"
               class="absolute p-1 rounded-md text-gray-500 bottom-1.5 right-1 md:bottom-2.5 md:right-2 hover:bg-gray-100 dark:hover:text-gray-400 dark:hover:bg-gray-900 disabled:hover:bg-transparent dark:disabled:hover:bg-transparent"><svg
                 stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 20 20" class="h-4 w-4 rotate-90"
@@ -91,9 +91,13 @@ const addFullBlock = (markdown: string, loading: boolean) => {
   return markdown + (loading ? '<span class="animate-pulse">\u258b</span>' : '')
 };
 
+const numOfLines = computed(() => {
+  return Math.max(Math.min(4, message.value.split('\n').length), 1);
+});
+
 const scrollToEnd = () => {
   setTimeout(() => {
-    document.querySelector(".chat-messages>div:last-child")?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    document.querySelector(".chat-messages>div:last-child")?.scrollIntoView({ behavior: 'smooth', block: 'end' });
   }, 100);
 };
 
