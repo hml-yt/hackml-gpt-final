@@ -1,7 +1,7 @@
 <template>
   <div>
     <main
-      class="absolute inset-0 transition-width flex flex-col overflow-hidden items-stretch flex-1 dark:bg-gray-800 pb-20">
+      class="absolute inset-0 transition-width flex flex-col overflow-hidden items-stretch flex-1 dark:bg-gray-800 pb-20 md:pb-32">
       <div class="flex-1 overflow-hidden">
         <div class="h-full overflow-y-auto">
           <div class="flex flex-col items-center text-sm h-full chat-messages">
@@ -27,8 +27,9 @@
                 </div>
                 <div class="relative flex w-[calc(100%-50px)] md:flex-col lg:w-[calc(100%-115px)]">
                   <div class="flex flex-grow flex-col gap-3">
-                    <div class="min-h-[20px] flex flex-col items-start gap-4 whitespace-pre-wrap">
-                      <VueShowdown :markdown="message.message" flavor="github" :options="{ emoji: true }" />
+                    <div
+                      class="min-h-[20px] flex flex-col items-start gap-4 whitespace-pre-wrap prose prose-gray text-gray-200 prose-p:m-0 prose-pre:p-0 prose-pre:m-0">
+                      <VueShowdown :markdown="message.message" :extensions="['highlight']" />
                     </div>
                   </div>
                 </div>
@@ -82,6 +83,12 @@
 const messages = ref([{
   actor: 'AI',
   message: 'Hello! How can I help you?'
+}, {
+  actor: 'Human',
+  message: 'Write me some code'
+}, {
+  actor: 'AI',
+  message: 'Sure, here\'s some code:\n \`\`\`js\nfunction sayHello (msg, who) {\n  return \`\${who} says: msg\`;\n}\nsayHello("Hello World", "Johnny");\n\`\`\`\n'
 }]);
 
 const message = ref("");
