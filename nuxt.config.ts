@@ -2,6 +2,7 @@
 export default defineNuxtConfig({
   app: {
     head: {
+      title: "Hacking Modern Life GPT",
       viewport: "initial-scale=1.0, interactive-widget=resizes-content",
     },
   },
