@@ -12,6 +12,9 @@
     "nuxt": "^3.0.0"
   },
   "dependencies": {
-    "nuxt-icon": "^0.2.5"
+    "@tailwindcss/typography": "^0.5.9",
+    "nuxt-icon": "^0.2.5",
+    "showdown-highlight": "^3.1.0",
+    "vue-showdown": "^4.0.0"
   }
 }

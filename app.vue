@@ -1,8 +1,9 @@
 <template>
-  <main class="relative h-screen transition-width flex flex-col overflow-hidden items-stretch flex-1 dark:bg-gray-800">
+  <main
+    class="absolute inset-0 h-screen transition-width flex flex-col overflow-hidden items-stretch flex-1 dark:bg-gray-800">
     <div class="flex-1 overflow-hidden">
       <div class="h-full overflow-y-auto">
-        <div class="flex flex-col items-center text-sm h-full">
+        <div class="flex flex-col items-center text-sm h-full chat-messages">
           <div v-for="message in messages"
             class="w-full border-b border-black/10 dark:border-gray-900/50 text-gray-800 dark:text-gray-100 group"
             :class="{ 'dark:bg-gray-800': message.actor === 'Human', 'dark:bg-gray-700': message.actor === 'AI' }">
@@ -25,7 +26,8 @@
               </div>
               <div class="relative flex w-[calc(100%-50px)] md:flex-col lg:w-[calc(100%-115px)]">
                 <div class="flex flex-grow flex-col gap-3">
-                  <div class="min-h-[20px] flex flex-col items-start gap-4 whitespace-pre-wrap">{{ message.message }}
+                  <div class="min-h-[20px] flex flex-col items-start gap-4 whitespace-pre-wrap">
+                    <VueShowdown :markdown="message.message" flavor="github" :options="{ emoji: true }" />
                   </div>
                 </div>
                 <div
@@ -42,6 +44,16 @@
               </div>
             </div>
           </div>
+          <div v-if="loading" class="stretch mx-2 flex flex-row text-white py-2" ref="loadingIndicator">
+            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
+              viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+              </path>
+            </svg>
+            Thinking...
+          </div>
           <div class="w-full h-48 flex-shrink-0"></div>
         </div>
       </div>
@@ -54,13 +66,14 @@
           <div
             class="flex flex-col w-full py-2 flex-grow md:py-3 md:pl-4 relative border border-black/10 bg-white dark:border-gray-900/50 dark:text-white dark:bg-gray-700 rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:shadow-[0_0_15px_rgba(0,0,0,0.10)]">
             <textarea tabindex="0" v-model="message" @keydown.enter.prevent="submit()" ref="messageInput" autofocus
-              data-id="63ee3844-11f0-456d-b3b5-a6e2a3ac6a04" rows="1" placeholder="Write your message here..."
+              :disabled="loading" data-id="63ee3844-11f0-456d-b3b5-a6e2a3ac6a04" rows="1"
+              :class="{ 'text-gray-800': loading }" placeholder="Write your message here..."
               class="m-0 w-full resize-none border-0 bg-transparent p-0 pl-2 pr-7 focus:ring-0 focus-visible:ring-0 dark:bg-transparent md:pl-0"
               style="max-height: 200px; height: 24px; overflow-y: hidden;"></textarea>
-            <button @click="submit()"
+            <button @click.prevent="submit()" :disabled="loading"
               class="absolute p-1 rounded-md text-gray-500 bottom-1.5 right-1 md:bottom-2.5 md:right-2 hover:bg-gray-100 dark:hover:text-gray-400 dark:hover:bg-gray-900 disabled:hover:bg-transparent dark:disabled:hover:bg-transparent"><svg
                 stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 20 20" class="h-4 w-4 rotate-90"
-                height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                height="1em" width="1em" xmlns="http://www.w3.org/2000/svg" :class="{ 'text-gray-800': loading }">
                 <path
                   d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z">
                 </path>
@@ -82,10 +95,13 @@ const messages = ref([{
 }]);
 
 const message = ref("");
+const loading = ref(false);
 const messageInput = ref<HTMLInputElement | null>(null)
 
 const sendRequest = async () => {
   let msg = "";
+
+  loading.value = true;
 
   const res = await fetch(`/api/gpt3`, {
     body: JSON.stringify(messages.value.slice(1)),
@@ -102,7 +118,9 @@ const sendRequest = async () => {
       messages.value.push({
         actor: 'AI',
         message: msg
-      })
+      });
+      document.querySelector(".chat-messages>div:last-child")?.scrollIntoView()
+      loading.value = false;
       return;
     }
 
@@ -117,15 +135,14 @@ const sendRequest = async () => {
   }
 }
 
-const submit = () => {
+const submit = async () => {
   const newMessage = message.value;
   messages.value.push({
     actor: 'Human',
     message: newMessage
   });
+  await sendRequest();
   message.value = "";
   messageInput.value?.focus();
-
-  sendRequest();
 };
 </script>
